@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Inventory</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+    .search-box {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Book Inventory</h2>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search by title..." onkeyup="filterBooks()">
+  </div>
+
+  <table id="inventoryTable">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>ISBN</th>
+        <th>Published</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Book rows will be inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    // Sample inventory data
+    const books = [
+      {
+        title: "The Great Gatsby",
+        author: "F. Scott Fitzgerald",
+        genre: "Classic",
+        isbn: "9780743273565",
+        publishDate: "1925-04-10"
+      },
+      {
+        title: "To Kill a Mockingbird",
+        author: "Harper Lee",
+        genre: "Fiction",
+        isbn: "9780061120084",
+        publishDate: "1960-07-11"
+      },
+      {
+        title: "1984",
+        author: "George Orwell",
+        genre: "Dystopian",
+        isbn: "9780451524935",
+        publishDate: "1949-06-08"
+      }
+    ];
+
+    function renderInventory() {
+      const tbody = document.querySelector("#inventoryTable tbody");
+      tbody.innerHTML = "";
+
+      books.forEach(book => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${book.title}</td>
+          <td>${book.author}</td>
+          <td>${book.genre}</td>
+          <td>${book.isbn}</td>
+          <td>${book.publishDate}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function filterBooks() {
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#inventoryTable tbody tr");
+
+      rows.forEach(row => {
+        const title = row.children[0].textContent.toLowerCase();
+        row.style.display = title.includes(search) ? "" : "none";
+      });
+    }
+
+    renderInventory();
+  </script>
+
+</body>
+</html>
