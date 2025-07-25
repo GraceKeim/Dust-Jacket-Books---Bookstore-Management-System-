@@ -1,0 +1,2 @@
+# Dust-Jacket-Books---Bookstore-Management-System-
+A specialty bookstore that transitions from traditional paper-based books to a digital platform. The primary goal is to streamline the bookstores operations that involves manual recordkeeping and transactions. Offers automation efficiency, key operational areas, inventory management, sales tracking, supplier ordering, customer ordering, accounting.
