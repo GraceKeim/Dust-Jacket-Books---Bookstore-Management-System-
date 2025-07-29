@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dust Jacket Books - Online Bookstore</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/custom.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-gray: #f8f9fa;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 100px 0;
+        }
+
+        .book-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .book-cover {
+            height: 250px;
+            background: linear-gradient(45deg, #f1f2f6, #ddd);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #666;
+        }
+
+        .price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .cart-counter {
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+        }
+
+        .search-section {
+            background-color: var(--light-gray);
+            padding: 60px 0;
+        }
+
+        .category-filter {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 50px 0 30px;
+        }
+
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="bi bi-book"></i> Dust Jacket Books</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#books">Browse Books</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory('Fiction')">Fiction</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory('Non-Fiction')">Non-Fiction</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory('Mystery')">Mystery</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory('Romance')">Romance</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory('Sci-Fi')">Sci-Fi</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="filterByCategory('all')">All Categories</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <!-- Search Bar -->
+                <form class="d-flex me-3" role="search" onsubmit="searchBooks(event)">
+                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Search books..." aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit"><i class="bi bi-search"></i></button>
+                </form>
+                
+                <!-- User Actions -->
+                <div class="d-flex align-items-center">
+                    <!-- Shopping Cart -->
+                    <button class="btn btn-outline-light me-2 position-relative" data-bs-toggle="modal" data-bs-target="#cartModal">
+                        <i class="bi bi-cart3"></i>
+                        <span class="cart-counter" id="cartCounter">0</span>
+                    </button>
+                    
+                    <!-- User Account -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <span id="userGreeting">Account</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li id="loginOption"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+                            <li id="registerOption"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a></li>
+                            <li id="profileOption" style="display: none;"><a class="dropdown-item" href="#">My Profile</a></li>
+                            <li id="ordersOption" style="display: none;"><a class="dropdown-item" href="#">My Orders</a></li>
+                            <li id="logoutOption" style="display: none;"><hr class="dropdown-divider"></li>
+                            <li id="logoutButton" style="display: none;"><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Discover Your Next Great Read</h1>
+                    <p class="lead mb-4">Welcome to Dust Jacket Books, your premier online destination for books of every genre. From bestsellers to hidden gems, find your perfect story today.</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg" onclick="document.getElementById('books').scrollIntoView()">
+                            <i class="bi bi-book"></i> Browse Books
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#registerModal">
+                            <i class="bi bi-person-plus"></i> Join Now
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="bi bi-book-half display-1"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search & Filter Section -->
+    <section class="search-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="category-filter text-center">
+                        <h3 class="mb-4">Find Books by Category</h3>
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <button class="btn btn-outline-primary w-100" onclick="filterByCategory('Fiction')">Fiction</button>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <button class="btn btn-outline-primary w-100" onclick="filterByCategory('Non-Fiction')">Non-Fiction</button>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <button class="btn btn-outline-primary w-100" onclick="filterByCategory('Mystery')">Mystery</button>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <button class="btn btn-outline-primary w-100" onclick="filterByCategory('Romance')">Romance</button>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary" onclick="filterByCategory('all')">View All Books</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Books Section -->
+    <section id="books" class="py-5">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <h2>Featured Books</h2>
+                    <p class="text-muted">Discover our curated collection of books</p>
+                </div>
+                <div class="col-lg-4 text-end">
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">
+                        <i class="bi bi-plus-circle"></i> Add New Book
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row" id="booksContainer">
+                <!-- Books will be dynamically inserted here -->
+            </div>
+            
+            <div id="noResults" class="text-center py-5" style="display: none;">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h3 class="mt-3">No books found</h3>
+                <p class="text-muted">Try adjusting your search or filter criteria</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5><i class="bi bi-book"></i> Dust Jacket Books</h5>
+                    <p>Your trusted online bookstore for discovering amazing reads and connecting with fellow book lovers.</p>
+                </div>
+                <div class="col-lg-2 mb-4">
+                    <h6>Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#home" class="text-light text-decoration-none">Home</a></li>
+                        <li><a href="#books" class="text-light text-decoration-none">Books</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">About</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 mb-4">
+                    <h6>Categories</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Fiction</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Non-Fiction</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Mystery</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Romance</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h6>Stay Connected</h6>
+                    <p>Subscribe to our newsletter for book recommendations and exclusive offers.</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-light" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2025 Dust Jacket Books. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login to Your Account</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Don't have an account? <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">Register here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Account</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm" onsubmit="handleRegister(event)">
+                        <div class="mb-3">
+                            <label for="registerName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="registerName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="registerEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="registerPassword" required minlength="6">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p>Already have an account? <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Shopping Cart</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cartItems">
+                        <!-- Cart items will be dynamically inserted here -->
+                    </div>
+                    <div id="emptyCart" class="text-center py-4">
+                        <i class="bi bi-cart-x display-4 text-muted"></i>
+                        <h5 class="mt-3">Your cart is empty</h5>
+                        <p class="text-muted">Add some books to get started!</p>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <div>
+                        <strong>Total: $<span id="cartTotal">0.00</span></strong>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Continue Shopping</button>
+                        <button type="button" class="btn btn-primary" id="checkoutBtn" onclick="checkout()" disabled>Checkout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Book Modal -->
+    <div class="modal fade" id="addBookModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Book</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBookForm" onsubmit="handleAddBook(event)">
+                        <div class="mb-3">
+                            <label for="bookTitle" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="bookTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookAuthor" class="form-label">Author</label>
+                            <input type="text" class="form-control" id="bookAuthor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookGenre" class="form-label">Genre</label>
+                            <select class="form-select" id="bookGenre" required>
+                                <option value="">Select Genre</option>
+                                <option value="Fiction">Fiction</option>
+                                <option value="Non-Fiction">Non-Fiction</option>
+                                <option value="Mystery">Mystery</option>
+                                <option value="Romance">Romance</option>
+                                <option value="Sci-Fi">Science Fiction</option>
+                                <option value="Fantasy">Fantasy</option>
+                                <option value="Biography">Biography</option>
+                                <option value="History">History</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookISBN" class="form-label">ISBN</label>
+                            <input type="text" class="form-control" id="bookISBN" pattern="\d{10}|\d{13}" title="10 or 13-digit ISBN">
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookPrice" class="form-label">Price ($)</label>
+                            <input type="number" class="form-control" id="bookPrice" step="0.01" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="bookDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookPublishDate" class="form-label">Publish Date</label>
+                            <input type="date" class="form-control" id="bookPublishDate">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Add Book</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="js/bookstore.js"></script>
+
+</body>
+</html>
